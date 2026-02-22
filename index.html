@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kawaii PFP Generator</title>
+<style>
+    body {
+        font-family: 'Comic Sans MS', Arial, sans-serif;
+        text-align: center;
+        background: linear-gradient(135deg, #ffd6e7, #d6f5ff);
+        margin: 0;
+        padding: 30px;
+        color: #ff4fa3;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+        font-size: 40px;
+    }
+
+    .controls {
+        margin-bottom: 20px;
+    }
+
+    select, button {
+        padding: 10px 18px;
+        font-size: 16px;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        margin: 5px;
+    }
+
+    select {
+        background: #ffe0f0;
+        color: #ff4fa3;
+    }
+
+    button {
+        background: #ff4fa3;
+        color: white;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #ff2f91;
+        transform: scale(1.05);
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 20px;
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .grid img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
+        transition: 0.3s;
+    }
+
+    .grid img:hover {
+        transform: scale(1.1);
+    }
+
+    footer {
+        margin-top: 50px;
+        font-size: 18px;
+        opacity: 0.6;
+    }
+</style>
+</head>
+<body>
+
+<h1>🌸 Kawaii PFP Generator 🌸</h1>
+
+<div class="controls">
+    <select id="category">
+        <option value="kawaii pastel">🎀 Pastel Kawaii</option>
+        <option value="kawaii anime">✨ Cute Anime</option>
+        <option value="kawaii chibi">💖 Chibi Characters</option>
+        <option value="kawaii cute animal">🐰 Cute Animals</option>
+    </select>
+    <button onclick="loadImages()">Get New Pfps</button>
+</div>
+
+<div class="grid" id="pfpGrid"></div>
+
+<footer>made by Luni</footer>
+
+<script>
+function loadImages() {
+    const grid = document.getElementById("pfpGrid");
+    const category = document.getElementById("category").value;
+    grid.innerHTML = "";
+
+    // Create 6 random images from Unsplash source
+    for (let i = 0; i < 6; i++) {
+        const img = document.createElement("img");
+
+        // Unsplash Source random URL with category search
+        img.src = "https://source.unsplash.com/featured/?" + 
+                  encodeURIComponent(category + ",cute,avatar,pfp") + 
+                  "&" + Math.random();
+
+        grid.appendChild(img);
+    }
+}
+
+// load on start
+loadImages();
+</script>
+
+</body>
+</html>
