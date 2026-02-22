@@ -5,115 +5,94 @@
 <title>Kawaii PFP Generator</title>
 <style>
     body {
-        font-family: 'Comic Sans MS', Arial, sans-serif;
+        font-family: Arial, sans-serif;
         text-align: center;
-        background: linear-gradient(135deg, #ffd6e7, #d6f5ff);
+        background: #ffe6f2;
         margin: 0;
-        padding: 30px;
-        color: #ff4fa3;
+        padding: 40px;
+        color: #d6006c;
     }
-
     h1 {
-        margin-bottom: 20px;
-        font-size: 40px;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
     }
-
-    .controls {
-        margin-bottom: 20px;
-    }
-
-    select, button {
-        padding: 10px 18px;
-        font-size: 16px;
-        border: none;
-        border-radius: 15px;
-        cursor: pointer;
-        margin: 5px;
-    }
-
-    select {
-        background: #ffe0f0;
-        color: #ff4fa3;
-    }
-
     button {
-        background: #ff4fa3;
+        padding: 10px 22px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 12px;
+        background: #d6006c;
         color: white;
-        transition: 0.2s;
+        cursor: pointer;
+        margin-bottom: 20px;
     }
-
     button:hover {
-        background: #ff2f91;
-        transform: scale(1.05);
+        background: #a80058;
     }
-
     .grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 20px;
-        max-width: 900px;
+        gap: 18px;
+        max-width: 800px;
         margin: auto;
     }
-
     .grid img {
         width: 120px;
         height: 120px;
         object-fit: cover;
         border-radius: 50%;
-        box-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
-        transition: 0.3s;
-    }
-
-    .grid img:hover {
-        transform: scale(1.1);
-    }
-
-    footer {
-        margin-top: 50px;
-        font-size: 18px;
-        opacity: 0.6;
+        border: 3px solid white;
+        box-shadow: 0 0 12px rgba(0,0,0,0.2);
     }
 </style>
 </head>
 <body>
 
 <h1>🌸 Kawaii PFP Generator 🌸</h1>
-
-<div class="controls">
-    <select id="category">
-        <option value="kawaii pastel">🎀 Pastel Kawaii</option>
-        <option value="kawaii anime">✨ Cute Anime</option>
-        <option value="kawaii chibi">💖 Chibi Characters</option>
-        <option value="kawaii cute animal">🐰 Cute Animals</option>
-    </select>
-    <button onclick="loadImages()">Get New Pfps</button>
-</div>
+<button onclick="loadCutePFPs()">Get New Pfps</button>
 
 <div class="grid" id="pfpGrid"></div>
 
-<footer>made by Luni</footer>
-
 <script>
-function loadImages() {
+const CLIENT_ID = "YOUR_IMGUR_CLIENT_ID"; // ← paste your Imgur Client ID here
+
+async function loadCutePFPs() {
     const grid = document.getElementById("pfpGrid");
-    const category = document.getElementById("category").value;
     grid.innerHTML = "";
 
-    // Create 6 random images from Unsplash source
-    for (let i = 0; i < 6; i++) {
-        const img = document.createElement("img");
+    const query = encodeURIComponent("kawaii cute pastel anime chibi aesthetic");
+    const url = `https://api.imgur.com/3/gallery/search/top/all/1?q=${query}`;
 
-        // Unsplash Source random URL with category search
-        img.src = "https://source.unsplash.com/featured/?" + 
-                  encodeURIComponent(category + ",cute,avatar,pfp") + 
-                  "&" + Math.random();
+    try {
+        const res = await fetch(url, {
+            headers: {
+                Authorization: `Client-ID ${CLIENT_ID}`
+            }
+        });
+        const json = await res.json();
 
-        grid.appendChild(img);
+        // Filter out only images
+        const images = json.data
+            .flatMap(item => item.images || [])
+            .map(img => img.link)
+            .filter(url => /\.(jpg|jpeg|png|gif)$/.test(url));
+
+        if (images.length === 0) {
+            grid.innerHTML = "<p>No cute images found :(</p>";
+            return;
+        }
+
+        // Show 6 random images
+        for (let i = 0; i < 6; i++) {
+            const img = document.createElement("img");
+            img.src = images[Math.floor(Math.random() * images.length)];
+            grid.appendChild(img);
+        }
+    } catch (err) {
+        console.error(err);
+        grid.innerHTML = "<p>Error loading images.</p>";
     }
 }
-
-// load on start
-loadImages();
 </script>
 
 </body>
