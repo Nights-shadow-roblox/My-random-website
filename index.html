@@ -5,35 +5,46 @@
 <title>Kawaii PFP Generator</title>
 <style>
     body {
-        font-family: Arial, sans-serif;
+        font-family: 'Comic Sans MS', Arial, sans-serif;
         text-align: center;
-        background: #ffe6f2;
+        background: linear-gradient(135deg, #ffd6e7, #d6f5ff);
         margin: 0;
         padding: 40px;
-        color: #d6006c;
+        color: #ff4fa3;
     }
     h1 {
+        margin-bottom: 20px;
         font-size: 2.5rem;
-        margin-bottom: 10px;
     }
-    button {
-        padding: 10px 22px;
-        font-size: 1rem;
-        border: none;
-        border-radius: 12px;
-        background: #d6006c;
-        color: white;
-        cursor: pointer;
+    .controls {
         margin-bottom: 20px;
     }
+    select, button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 12px;
+        margin: 5px;
+        cursor: pointer;
+    }
+    select {
+        background: #ffe0f0;
+        color: #ff4fa3;
+    }
+    button {
+        background: #ff4fa3;
+        color: white;
+        transition: 0.2s;
+    }
     button:hover {
-        background: #a80058;
+        background: #ff2f91;
+        transform: scale(1.05);
     }
     .grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 18px;
-        max-width: 800px;
+        max-width: 900px;
         margin: auto;
     }
     .grid img {
@@ -41,58 +52,72 @@
         height: 120px;
         object-fit: cover;
         border-radius: 50%;
-        border: 3px solid white;
-        box-shadow: 0 0 12px rgba(0,0,0,0.2);
+        box-shadow: 0 0 12px rgba(255,77,109,0.4);
+        transition: 0.3s;
+    }
+    .grid img:hover {
+        transform: scale(1.1);
+    }
+    footer {
+        margin-top: 50px;
+        font-size: 16px;
+        opacity: 0.7;
     }
 </style>
 </head>
 <body>
 
 <h1>🌸 Kawaii PFP Generator 🌸</h1>
-<button onclick="loadCutePFPs()">Get New Pfps</button>
+
+<div class="controls">
+    <select id="category">
+        <option value="kawaii pastel">🎀 Pastel Kawaii</option>
+        <option value="kawaii anime">✨ Cute Anime</option>
+        <option value="kawaii chibi">💖 Chibi Characters</option>
+        <option value="kawaii cute animal">🐰 Cute Animals</option>
+    </select>
+    <button onclick="loadPFPs()">Get New Pfps</button>
+</div>
 
 <div class="grid" id="pfpGrid"></div>
 
-<script>
-const CLIENT_ID = "YOUR_IMGUR_CLIENT_ID"; // ← paste your Imgur Client ID here
+<footer>made by Luni for Qzvenom 💕</footer>
 
-async function loadCutePFPs() {
+<script>
+const API_KEY = "AIzaSyBmXCHA2MH-i__orytpYAFUofgdRysPCqY";
+const CSE_ID = "e2ac4d1b9812f4746";
+
+async function loadPFPs() {
     const grid = document.getElementById("pfpGrid");
     grid.innerHTML = "";
 
-    const query = encodeURIComponent("kawaii cute pastel anime chibi aesthetic");
-    const url = `https://api.imgur.com/3/gallery/search/top/all/1?q=${query}`;
+    const category = document.getElementById("category").value;
+    const query = encodeURIComponent(category + " kawaii chibi anime pastel");
+
+    const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CSE_ID}&searchType=image&num=6&q=${query}`;
 
     try {
-        const res = await fetch(url, {
-            headers: {
-                Authorization: `Client-ID ${CLIENT_ID}`
-            }
-        });
-        const json = await res.json();
+        const res = await fetch(url);
+        const data = await res.json();
 
-        // Filter out only images
-        const images = json.data
-            .flatMap(item => item.images || [])
-            .map(img => img.link)
-            .filter(url => /\.(jpg|jpeg|png|gif)$/.test(url));
-
-        if (images.length === 0) {
-            grid.innerHTML = "<p>No cute images found :(</p>";
+        if (!data.items || data.items.length === 0) {
+            grid.innerHTML = "<p>No images found 😢</p>";
             return;
         }
 
-        // Show 6 random images
-        for (let i = 0; i < 6; i++) {
+        data.items.forEach(item => {
             const img = document.createElement("img");
-            img.src = images[Math.floor(Math.random() * images.length)];
+            img.src = item.link;
             grid.appendChild(img);
-        }
+        });
     } catch (err) {
         console.error(err);
-        grid.innerHTML = "<p>Error loading images.</p>";
+        grid.innerHTML = "<p>Error loading images 😢</p>";
     }
 }
+
+// Load default category on page load
+loadPFPs();
 </script>
 
 </body>
